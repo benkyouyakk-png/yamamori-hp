@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL;
+  const toEmail = process.env.CONTACT_TO_EMAIL;
+
+  if (!apiKey || !fromEmail || !toEmail) {
+    return NextResponse.json(
+      { error: "メール送信の設定が完了していません。" },
+      { status: 500 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { name, email, phone, subject, message } = body;
@@ -15,8 +24,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const fromEmail = "noreply@yamamori.org";
-    const toEmail = "yamamori-sangyou@nifty.com";
+    const resend = new Resend(apiKey);
 
     const { error } = await resend.emails.send({
       from: `ふとんのやまもり お問合せ <${fromEmail}>`,
@@ -41,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "メールの送信に失敗しました。" },
       { status: 500 }

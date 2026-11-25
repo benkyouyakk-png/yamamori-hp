@@ -15,19 +15,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
-    const toEmail = process.env.CONTACT_TO_EMAIL;
-
-    if (!toEmail) {
-      return NextResponse.json(
-        { error: "送信先メールアドレスが設定されていません。" },
-        { status: 500 }
-      );
-    }
+    const fromEmail = "noreply@yamamori.org";
+    const toEmail = "yamamori-sangyou@nifty.com";
 
     const { error } = await resend.emails.send({
       from: `ふとんのやまもり お問合せ <${fromEmail}>`,
-      to: "benkyouya.kk@gmail.com",
+      to: toEmail,
       replyTo: email,
       subject: `【HPお問合せ】${subject}（${name}様）`,
       text: [
